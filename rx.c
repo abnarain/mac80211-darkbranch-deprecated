@@ -27,6 +27,10 @@
 #include "wpa.h"
 #include "tkip.h"
 #include "wme.h"
+#define JIGS 
+#ifdef JIGS
+#include "jigdump.h"
+#endif
 
 /*
  * monitor mode reception
@@ -236,6 +240,12 @@ ieee80211_rx_monitor(struct ieee80211_local *local, struct sk_buff *origskb,
 	 */
 
 	/* room for the radiotap header based on driver features */
+
+	static int ab1=0;
+	if(ab1<2){
+	printk(KERN_INFO " abhinav : %s %d\n",__func__,ab1++);
+	}
+
 	needed_headroom = ieee80211_rx_radiotap_len(local, status);
 
 	if (local->hw.flags & IEEE80211_HW_RX_INCLUDES_FCS)
@@ -261,6 +271,11 @@ ieee80211_rx_monitor(struct ieee80211_local *local, struct sk_buff *origskb,
 		skb = origskb;
 		origskb = NULL;
 
+
+	static int ab2=0;
+	if(ab2<2){
+	printk(KERN_INFO " abhinav: if should drop frame %d\n",ab2++);	
+	}
 		/*
 		 * This shouldn't trigger often because most devices have an
 		 * RX header they pull before we get here, and that should
@@ -278,6 +293,11 @@ ieee80211_rx_monitor(struct ieee80211_local *local, struct sk_buff *origskb,
 		 * Need to make a copy and possibly remove radiotap header
 		 * and FCS from the original.
 		 */
+
+	static int ab3=0;
+	if(ab3<2){
+	printk(KERN_INFO " abhinav: else should drop frame %d\n",ab3++);	
+	}
 		skb = skb_copy_expand(origskb, needed_headroom, 0, GFP_ATOMIC);
 
 		origskb = remove_monitor_info(local, origskb);
@@ -307,6 +327,13 @@ ieee80211_rx_monitor(struct ieee80211_local *local, struct sk_buff *origskb,
 		if (prev_dev) {
 			skb2 = skb_clone(skb, GFP_ATOMIC);
 			if (skb2) {
+
+
+			static int ab3=0;
+			if(ab3<2){
+			printk(KERN_INFO "abhinav: first netif recv frame %d\n",ab3++);	
+			}
+
 				skb2->dev = prev_dev;
 				netif_receive_skb(skb2);
 			}
@@ -318,6 +345,10 @@ ieee80211_rx_monitor(struct ieee80211_local *local, struct sk_buff *origskb,
 	}
 
 	if (prev_dev) {
+			static int ab4=0;
+			if(ab4<2){
+			printk(KERN_INFO "abhinav:  second netif recv frame %d\n",ab4++);	
+			}
 		skb->dev = prev_dev;
 		netif_receive_skb(skb);
 	} else
@@ -1754,6 +1785,13 @@ ieee80211_deliver_skb(struct ieee80211_rx_data *rx)
 			/* deliver to local stack */
 			skb->protocol = eth_type_trans(skb, dev);
 			memset(skb->cb, 0, sizeof(skb->cb));
+
+			static int ab5=0;
+			if(ab5<2){
+			printk(KERN_INFO " abhinav: deliver netif recv frame %d\n",ab5++);	
+			}
+
+
 			netif_receive_skb(skb);
 		}
 	}
